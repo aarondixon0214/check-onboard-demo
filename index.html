@@ -3,41 +3,169 @@
 <head>
   <meta charset="UTF-8" />
   <title>Employer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/feather-icons" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    .nav, .input-group { background: #f4f4f4; padding: 1rem; }
-    .input-group { display: flex; gap: 1rem; align-items: center; }
-    label { font-weight: bold; }
-    input { padding: 0.5rem; font-size: 1rem; width: 250px; }
-    select { font-size: 1rem; padding: 0.4rem; }
-    .container { padding: 1rem; }
-    #onboard-frame { width: 100%; height: 600px; border: none; display: none; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #f9f9fb;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 220px;
+      background-color: #1e1f24;
+      color: white;
+      padding-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transition: all 0.3s ease;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #292a30;
+    }
+    .sidebar i {
+      width: 20px;
+      height: 20px;
+    }
+    .main-content {
+      margin-left: 220px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+    .tab-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .tab-controls button {
+      padding: 0.6rem 1rem;
+      background-color: #eee;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .tab-controls button.active {
+      background-color: #ddd;
+    }
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .input-group, .nav {
+      background: #fff;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    label {
+      font-weight: 500;
+    }
+    input, select {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #onboard-frame {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="input-group">
-    <label for="api-key">API Key:</label>
-    <input type="password" id="api-key" placeholder="Enter your API key" />
-    <label for="company-id">Company ID:</label>
-    <input type="text" id="company-id" placeholder="Enter your Company ID" />
-    <label for="signatory-id">Signatory ID:</label>
-    <input type="text" id="signatory-id" placeholder="Enter your Signatory ID" />
+  <div class="sidebar">
+    <a href="#"><i data-feather="home"></i>Home</a>
+    <a href="#"><i data-feather="credit-card"></i>Accounts</a>
+    <a href="#"><i data-feather="send"></i>Payments</a>
+    <a href="#" class="active"><i data-feather="dollar-sign"></i>Payroll</a>
+    <a href="#"><i data-feather="settings"></i>Settings</a>
   </div>
 
-  <div class="nav">
-    <label for="payroll-dropdown">Payroll:</label>
-    <select id="payroll-dropdown">
-      <option value="">-- Select --</option>
-      <option value="onboard">Onboard</option>
-      <option value="view">View</option>
-    </select>
+  <div class="main-content">
+    <div class="tab-controls">
+      <button id="tab-onboard" class="active">Onboard</button>
+      <button id="tab-view">View</button>
+    </div>
+
+    <div id="panel-onboard" class="tab-panel active">
+      <div class="input-group">
+        <label for="api-key">API Key:</label>
+        <input type="password" id="api-key" placeholder="Enter your API key" />
+        <label for="company-id">Company ID:</label>
+        <input type="text" id="company-id" placeholder="Enter your Company ID" />
+        <label for="signatory-id">Signatory ID:</label>
+        <input type="text" id="signatory-id" placeholder="Enter your Signatory ID" />
+      </div>
+
+      <div class="nav">
+        <label for="payroll-dropdown">Payroll:</label>
+        <select id="payroll-dropdown">
+          <option value="">-- Select --</option>
+          <option value="onboard">Onboard</option>
+          <option value="view">View</option>
+        </select>
+      </div>
+
+      <iframe id="onboard-frame"></iframe>
+    </div>
+
+    <div id="panel-view" class="tab-panel">
+      <p>This is a placeholder for the View tab content.</p>
+    </div>
   </div>
 
-  <div class="container">
-    <iframe id="onboard-frame"></iframe>
-  </div>
-
+  <script src="https://unpkg.com/feather-icons"></script>
   <script>
+    feather.replace();
+
+    // Tab switching logic
+    const onboardTab = document.getElementById('tab-onboard');
+    const viewTab = document.getElementById('tab-view');
+    const onboardPanel = document.getElementById('panel-onboard');
+    const viewPanel = document.getElementById('panel-view');
+
+    onboardTab.addEventListener('click', () => {
+      onboardTab.classList.add('active');
+      viewTab.classList.remove('active');
+      onboardPanel.classList.add('active');
+      viewPanel.classList.remove('active');
+    });
+
+    viewTab.addEventListener('click', () => {
+      viewTab.classList.add('active');
+      onboardTab.classList.remove('active');
+      viewPanel.classList.add('active');
+      onboardPanel.classList.remove('active');
+    });
+
     document.getElementById('payroll-dropdown').addEventListener('change', async function (event) {
       const selected = event.target.value;
       const iframe = document.getElementById('onboard-frame');
