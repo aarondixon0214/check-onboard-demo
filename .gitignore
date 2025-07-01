@@ -1,0 +1,11 @@
+# Ignore node-related folders if you ever reinstall npm packages
+node_modules/
+
+# Ignore env config if you add one again later
+.env
+
+# Ignore macOS artifacts
+.DS_Store
+
+# Ignore logs
+npm-debug.log*
